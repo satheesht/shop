@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect("login");
 });
 
 Auth::routes();
@@ -30,3 +30,5 @@ Route::delete('/attributes/remove', 'HomeController@removeAttribute');
 Route::post('/products/addNew', 'HomeController@addNew');
 Route::delete('/products/remove', 'HomeController@remove');
 Route::get('/ajax/get/categories', 'AdminController@getCategories')->name("getCategories");
+
+Route::get('logout', 'Auth\LoginController@logout')->name('logout');

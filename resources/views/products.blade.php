@@ -144,6 +144,11 @@ app.controller('products', function($scope,$http) {
         <input type="text" ng-model="product.quantity" class="form-control" id="exampleFormControlInput1" >
       </div>
 
+      <div class="form-group">
+      <label for="exampleFormControlInput1">Price</label>
+      <input type="file" ng-model="product.price" class="form-control" id="exampleFormControlInput1" >
+    </div>
+
     </form>
       </div>
       <div class="modal-footer">
