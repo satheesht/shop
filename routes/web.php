@@ -14,10 +14,12 @@
 Route::get('/', function () {
     return redirect("login");
 });
+Route::get('/home', function () {
+    return redirect("login");
+});
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/dashboard/{category}/{attribute}/{search}', 'HomeController@dashboard')->name('dashboard');
 Route::get('/categories', 'HomeController@categories')->name('categories');
 Route::get('/attributes', 'HomeController@attributes')->name('attributes');
