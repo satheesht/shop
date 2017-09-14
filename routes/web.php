@@ -14,9 +14,7 @@
 Route::get('/', function () {
     return redirect("login");
 });
-Route::get('/home', function () {
-    return redirect("login");
-});
+Route::get('/home', 'HomeController@dashboard');
 
 Auth::routes();
 

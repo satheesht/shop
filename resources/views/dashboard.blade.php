@@ -24,7 +24,7 @@ $("#cancel_filter").click(function(){
         @if($category || $search)
         <br>
         <div class="alert alert-warning" role="alert">
-          Showing result for '{{$category?$category:$search}}' &nbsp;&nbsp;&nbsp;<button type="button" id="cancel_filter" class="btn btn-outline-info">Cancel</button>
+          Showing result for '<b>{{$category?$category:$search}}</b>' &nbsp;&nbsp;&nbsp;<button type="button" id="cancel_filter" class="btn btn-outline-info">Cancel</button>
         </div>
         @endif
 
