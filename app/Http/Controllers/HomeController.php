@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
+use Storage;
+use File;
+use Redirect;
  
 class HomeController extends Controller
 {
@@ -96,12 +99,23 @@ class HomeController extends Controller
 
 
 
-     public function dashboard()
+     public function dashboard(Request $data)
      {
+        
+        $qry = '';
+        if($data->category){ 
+            $qry = "WHERE b.name like '%".addslashes($data->category)."%'";
+        }else if($data->attribute){
+
+        }else if($data->search){
+            $qry = "WHERE a.title like '%".addslashes($data->search)."%'";
+        }
+        $search     = $data->search;
+        $category   = $data->category;
         $categories = DB::select("SELECT name,category_id FROM categories");
         $attributes = DB::select("SELECT a.attribute_id as id,a.description,a.title as name,b.name as category FROM attributes a left join categories b on a.category=b.category_id");
-        $products = DB::select("SELECT a.*,b.name as category FROM products a LEFT JOIN categories b on b.category_id=a.category");
-        return view('dashboard',compact("categories","attributes","products"));
+        $products = DB::select("SELECT a.*,b.name as category FROM products a LEFT JOIN categories b on b.category_id=a.category $qry");
+        return view('dashboard',compact("categories","attributes","products","search","category"));
      }
 
     /**
@@ -135,25 +149,36 @@ class HomeController extends Controller
      }
 
      public function addNew(Request $data){
-         $data = json_decode($data->getContent());
-         $id = DB::table("products")->insertGetId([
-             "title"=>$data->name,
-             "model"=>$data->model,
-             "category"=>$data->category,
-             "description"=>(isset($data->description)?$data->description:''),
-             "price"=>$data->price,
-             "status"=>(isset($data->status)?$data->status:''),
-             "quantity"=>(isset($data->quantity)?$data->quantity:null)
+
+        $file = $data->file("image");
+        $extension = $file->getClientOriginalExtension();
+        $image = uniqid().'.'.$extension;
+        Storage::disk('local')->put($image,  File::get($file));
+
+        $id = DB::table("products")->insertGetId([
+             "title"=>$data->input("name"),
+             "model"=>$data->input("model"),
+             "category"=>$data->input("category"),
+             "description"=>$data->input("description"),
+             "price"=>$data->input("price"),
+             "status"=>$data->input("status"),
+             "quantity"=>$data->input("quantity"),
+             "image"=>$image
          ]);
-         foreach($data->attribute as $rec){
-             $pairs [] = ["product"=>$id,"attribute"=>$rec];
-         }
+        if(is_array($data->input("attribute"))){
+            foreach($data->input("attribute") as $rec){
+                $pairs [] = ["product"=>$id,"attribute"=>$rec];
+            }
+        }else{
+            $pairs [] = ["product"=>$id,"attribute"=>$data->input("attribute")];
+        }
          DB::table("product_attributes")->insert($pairs );
+         return Redirect::route('products');
      }
 
      public function remove(Request $data){
-        $data = json_decode($data->getContent());
-        DB::select("DELETE from products WHERE product_id='$data->product_id'");
+        $data = $data->input("product_id");
+        DB::select("DELETE from products WHERE product_id='$data'");
      }
     
 }

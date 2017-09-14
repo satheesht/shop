@@ -34,9 +34,7 @@
           
        
         </ul>
-        <form class="form-inline mt-2 mt-md-0">
-          <a href="{{url('logout')}}"><button class="btn btn-default my-2 my-sm-0" type="submit">Logout</button></a>
-        </form>
+        
       </div>
     </nav>
 

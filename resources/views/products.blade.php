@@ -7,7 +7,11 @@
 <script src="{{ asset('js/popper.min.js') }}" ></script>
 <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
-
+<style>
+  .products img{
+    width:50px;
+  }
+</style>
 
 <style>#addNew{float:right;}</style>
 <script>
@@ -30,15 +34,16 @@ app.controller('products', function($scope,$http) {
     }
 
     $scope.deleteProduct = function(product_id){
-      $http({
-        url: $("#delete").val(),
-        method: "delete",
-        data: {"product_id":product_id},
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        then:function(){
-          window.location.reload(1);
+        if(confirm("Are you sure?")){
+            $.ajax({
+                url:$("#delete").val(),
+                method:"delete",
+                data: { "_token": "{{ csrf_token() }}","product_id":product_id},
+                success:function(result){
+                    window.location.reload(1);
+                }
+            });
         }
-      });
     }
 });
 </script>
@@ -48,15 +53,16 @@ app.controller('products', function($scope,$http) {
 <div class="container" ng-app="shop" ng-controller="products">
 
 <input type="hidden" id="newProductUrl" value="{{ url('products/addNew') }}" >
-<input type="hidden" id="delete" value="{{ url('products/remove') }}" >
+<input type="hidden" id="delete" value="{{ url('/products/remove') }}" >
 <div class="table-responsive">
   <br>
   <h3>Products <button type="button" data-target="#form" data-toggle="modal" id="addNew" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i> Add new</button></h3>
-<table class="table table-striped">
+<table class="table table-striped products">
   <thead>
     <tr>
       <th>#</th>
       <th>Name</th>
+      <th>Image</th>
       <th>Category</th>
       <th>Description</th>
       <th>Price</th>
@@ -67,11 +73,12 @@ app.controller('products', function($scope,$http) {
       <tr>
         <td>{{++$index}}</td>
         <td>{{$product->title}}</td>
+        <td><img src="{{url('products/image/'.$product->image)}}"></td>
         <td>{{$product->category}}</td>
         <td>{{$product->description}}</td>
         <td>{{$product->price}}</td>
         <td>{{$product->status}}</td>
-        <td><span class="badge badge-danger removeAttribute" ng-click="deleteProduct('{{$product->product_id}}')">Delete</span> <span class="badge badge-info">Update</span></td>
+        <td><span class="badge badge-danger removeAttribute" ng-click="deleteProduct('{{$product->product_id}}')">Delete</span></td>
       </tr>
     @endforeach
   </thead>
@@ -92,26 +99,28 @@ app.controller('products', function($scope,$http) {
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      <form action="{{url('/products/addNew')}}" method="post" enctype="multipart/form-data">
+      {{ csrf_field() }}
       <div class="modal-body">
-      <form>
+     
       <div class="form-group">
         <label for="exampleFormControlInput1">Name</label>
-        <input type="text" ng-model="product.name" class="form-control" id="exampleFormControlInput1" >
+        <input required type="text" ng-model="product.name" name="name" class="form-control" id="exampleFormControlInput1" >
       </div>
 
       <div class="form-group">
         <label for="exampleFormControlInput1">Model</label>
-        <input type="text"  ng-model="product.model" class="form-control" id="exampleFormControlInput1" >
+        <input required type="text"  ng-model="product.model" name="model" class="form-control" id="exampleFormControlInput1" >
       </div>
 
       <div class="form-group">
         <label for="exampleFormControlInput1">Price</label>
-        <input type="text" ng-model="product.price" class="form-control" id="exampleFormControlInput1" >
+        <input required type="text" ng-model="product.price" name="price" class="form-control" id="exampleFormControlInput1" >
       </div>
       
       <div class="form-group">
         <label for="exampleFormControlSelect2">Category</label>
-        <select ng-model="product.category" class="form-control" id="exampleFormControlSelect2">
+        <select required ng-model="product.category" name="category" class="form-control" id="exampleFormControlSelect2">
           @foreach($categories as $row)
             <option value="{{ $row->category_id }}">{{ $row->name }}</option>
           @endforeach
@@ -119,7 +128,7 @@ app.controller('products', function($scope,$http) {
       </div>
       <div class="form-group">
         <label for="exampleFormControlSelect2">Attributes</label>
-        <select ng-model="product.attribute" multiple  class="form-control" id="exampleFormControlSelect2">
+        <select required ng-model="product.attribute" name="attribute" multiple  class="form-control" id="exampleFormControlSelect2">
           @foreach($attributes as $row)
             <option value="{{ $row->id }}">{{ $row->name }}</option>
           @endforeach
@@ -127,34 +136,36 @@ app.controller('products', function($scope,$http) {
       </div>
       <div class="form-group">
         <label for="exampleFormControlTextarea1">Description</label>
-        <textarea  ng-model="product.description" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+        <textarea  required ng-model="product.description" name="description" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
       </div>
 
       <div class="form-group">
       <label for="exampleFormControlSelect2">Status</label>
-      <select ng-model="product.status" class="form-control" id="exampleFormControlSelect2">
+      <select required ng-model="product.status" name="status" class="form-control" id="exampleFormControlSelect2">
           <option value="Not Available">Not Available</option>
           <option value="Available">Available</option>
-          <option value="Coming Soon">Coming Soon</option>
+          <option  value="Coming Soon">Coming Soon</option>
       </select>
     </div>
 
       <div class="form-group">
         <label for="exampleFormControlInput1">Quantity</label>
-        <input type="text" ng-model="product.quantity" class="form-control" id="exampleFormControlInput1" >
+        <input type="text" required ng-model="product.quantity" name="quantity" class="form-control" id="exampleFormControlInput1" >
       </div>
 
       <div class="form-group">
-      <label for="exampleFormControlInput1">Price</label>
-      <input type="file" ng-model="product.price" class="form-control" id="exampleFormControlInput1" >
+      <label for="exampleFormControlInput1">Image</label>
+      <input type="file"  required name="image" class="form-control" id="exampleFormControlInput1" >
     </div>
 
-    </form>
+    
       </div>
       <div class="modal-footer">
-        <button type="button" ng-click="addNew()" class="btn btn-primary" id="submitNewChild">Save</button>
+        <button type="submit" class="btn btn-primary" id="submitNewChild">Save</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
+      </form>
+      
     </div>
   </div>
 </div>

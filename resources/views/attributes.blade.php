@@ -77,7 +77,7 @@ $("#submitNewChild").click(function(){
       <td>{{$row->title}}</td>
       <td>{{$row->category}}</td>
       <td>{{$row->description}}</td>
-      <td><span class="badge badge-danger removeAttribute" data-id="{{$row->id}}">Delete</span> <span class="badge badge-info">Update</span></td>
+      <td><span class="badge badge-danger removeAttribute" data-id="{{$row->id}}">Delete</span></td>
       
     </tr>
     @endforeach

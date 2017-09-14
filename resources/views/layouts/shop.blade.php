@@ -32,7 +32,7 @@
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="{{url('dashboard')}}"><span class="glyphicon glyphicon-cloud" aria-hidden="true"></span> Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{{url('dashboard/0/0/0')}}"><span class="glyphicon glyphicon-cloud" aria-hidden="true"></span> Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
           <a class="nav-link" href="{{url('categories')}}">Categories</a>
@@ -45,12 +45,11 @@
             <a class="nav-link" href="{{url('products')}}">Products</a>
           </li>
         </ul>
-        <form class="form-inline mt-2 mt-md-0">
+       
           <a href="{{url('logout')}}"><button class="btn btn-default my-2 my-sm-0" type="submit">Logout</button></a>
-        </form>
+       
       </div>
     </nav>
-
     <div class="container-fluid">
     @yield('content')
     </div>
